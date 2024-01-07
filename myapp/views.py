@@ -1,17 +1,22 @@
 from django.shortcuts import render
 import requests
 from bs4 import BeautifulSoup
+from .models import Link
 
 # Create your views here.
 
 def scrape(request):
-    page = requests.get('https://www.google.com')
+    page = requests.get('https://www.facebook.com')
     soup = BeautifulSoup(page.text,'html.parser')
 
-    link_address = []
+   
 
     for link in soup.find_all('a'):
-        link_address.append(link.get('href'))
+        link_address = (link.get('href'))
+        link_text = link.string
+        Link.objects.create(address=link_address,name=link_text)
     
-    return render(request,'myapp/result.html',{'link_address':link_address})
+    data = Link.objects.all()
+    
+    return render(request,'myapp/result.html',{'data':data})
 
